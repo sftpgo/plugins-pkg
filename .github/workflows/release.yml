@@ -1,0 +1,164 @@
+name: Release
+
+on:
+  push:
+    tags: 'v*'
+
+jobs:
+  prepare-linux:
+    name: Prepare Linux Packages
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Get version
+        id: get_version
+        run: |
+          echo "PLUGINS_VERSION=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_OUTPUT
+        shell: bash
+
+      - name: Build
+        id: build_linux_pkgs
+        run: |
+          ./build-all.sh
+          PKG_VERSION=${PLUGINS_VERSION:1}
+          echo "PKG_VERSION=${PKG_VERSION}" >> $GITHUB_OUTPUT
+        env:
+          PLUGINS_VERSION: ${{ steps.get_version.outputs.PLUGINS_VERSION }}
+
+      - name: Upload RPM Package amd64
+        uses: actions/upload-artifact@v4
+        with:
+          name: sftpgo-plugins-${{ steps.build_linux_pkgs.outputs.PKG_VERSION }}-1.x86_64.rpm
+          path: ./dist-amd64/rpm/sftpgo-plugins-${{ steps.build_linux_pkgs.outputs.PKG_VERSION }}-1.x86_64.rpm
+          retention-days: 1
+
+      - name: Upload RPM Package arm64
+        uses: actions/upload-artifact@v4
+        with:
+          name: sftpgo-plugins-${{ steps.build_linux_pkgs.outputs.PKG_VERSION }}-1.aarch64.rpm
+          path: ./dist-arm64/rpm/sftpgo-plugins-${{ steps.build_linux_pkgs.outputs.PKG_VERSION }}-1.aarch64.rpm
+          retention-days: 1
+
+      - name: Upload RPM Package armv7
+        uses: actions/upload-artifact@v4
+        with:
+          name: sftpgo-plugins-${{ steps.build_linux_pkgs.outputs.PKG_VERSION }}-1.armv7hl.rpm
+          path: ./dist-arm7/rpm/sftpgo-plugins-${{ steps.build_linux_pkgs.outputs.PKG_VERSION }}-1.armv7hl.rpm
+          retention-days: 1
+
+      - name: Upload RPM Package ppc64le
+        uses: actions/upload-artifact@v4
+        with:
+          name: sftpgo-plugins-${{ steps.build_linux_pkgs.outputs.PKG_VERSION }}-1.ppc64le.rpm
+          path: ./dist-ppc64le/rpm/sftpgo-plugins-${{ steps.build_linux_pkgs.outputs.PKG_VERSION }}-1.ppc64le.rpm
+          retention-days: 1
+
+      - name: Upload Deb Package amd64
+        uses: actions/upload-artifact@v4
+        with:
+          name: sftpgo-plugins_${{ steps.build_linux_pkgs.outputs.PKG_VERSION }}-1_amd64.deb
+          path: ./dist-amd64/deb/sftpgo-plugins_${{ steps.build_linux_pkgs.outputs.PKG_VERSION }}-1_amd64.deb
+          retention-days: 1
+
+      - name: Upload Deb Package arm64
+        uses: actions/upload-artifact@v4
+        with:
+          name: sftpgo-plugins_${{ steps.build_linux_pkgs.outputs.PKG_VERSION }}-1_arm64.deb
+          path: ./dist-arm64/deb/sftpgo-plugins_${{ steps.build_linux_pkgs.outputs.PKG_VERSION }}-1_arm64.deb
+          retention-days: 1
+
+      - name: Upload Deb Package armv7
+        uses: actions/upload-artifact@v4
+        with:
+          name: sftpgo-plugins_${{ steps.build_linux_pkgs.outputs.PKG_VERSION }}-1_armhf.deb
+          path: ./dist-arm7/deb/sftpgo-plugins_${{ steps.build_linux_pkgs.outputs.PKG_VERSION }}-1_armhf.deb
+          retention-days: 1
+
+      - name: Upload Deb Package ppc64le
+        uses: actions/upload-artifact@v4
+        with:
+          name: sftpgo-plugins_${{ steps.build_linux_pkgs.outputs.PKG_VERSION }}-1_ppc64el.deb
+          path: ./dist-ppc64le/deb/sftpgo-plugins_${{ steps.build_linux_pkgs.outputs.PKG_VERSION }}-1_ppc64el.deb
+          retention-days: 1
+
+      - name: Upload Linux bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: sftpgo-plugins_${{ steps.get_version.outputs.PLUGINS_VERSION }}_linux_bundle.tar.xz
+          path: ./bundle/sftpgo-plugins_${{ steps.get_version.outputs.PLUGINS_VERSION }}_linux_bundle.tar.xz
+          retention-days: 1
+
+  create-release:
+    name: Release
+    needs: [prepare-linux]
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Get versions
+        id: get_version
+        run: |
+          PLUGINS_VERSION=${GITHUB_REF/refs\/tags\//}
+          PKG_VERSION=${PLUGINS_VERSION:1}
+          echo "PLUGINS_VERSION=${PLUGINS_VERSION}" >> $GITHUB_OUTPUT
+          echo "PKG_VERSION=${PKG_VERSION}" >> $GITHUB_OUTPUT
+        shell: bash
+
+      - name: Download RPM amd64
+        uses: actions/download-artifact@v4
+        with:
+          name: sftpgo-plugins-${{ steps.get_version.outputs.PKG_VERSION }}-1.x86_64.rpm
+
+      - name: Download RPM arm64
+        uses: actions/download-artifact@v4
+        with:
+          name: sftpgo-plugins-${{ steps.get_version.outputs.PKG_VERSION }}-1.aarch64.rpm
+
+      - name: Download RPM armv7
+        uses: actions/download-artifact@v4
+        with:
+          name: sftpgo-plugins-${{ steps.get_version.outputs.PKG_VERSION }}-1.armv7hl.rpm
+
+      - name: Download RPM ppc64le
+        uses: actions/download-artifact@v4
+        with:
+          name: sftpgo-plugins-${{ steps.get_version.outputs.PKG_VERSION }}-1.ppc64le.rpm
+
+      - name: Download Deb amd64
+        uses: actions/download-artifact@v4
+        with:
+          name: sftpgo-plugins_${{ steps.get_version.outputs.PKG_VERSION }}-1_amd64.deb
+
+      - name: Download Deb arm64
+        uses: actions/download-artifact@v4
+        with:
+          name: sftpgo-plugins_${{ steps.get_version.outputs.PKG_VERSION }}-1_arm64.deb
+
+      - name: Download Deb armv7
+        uses: actions/download-artifact@v4
+        with:
+          name: sftpgo-plugins_${{ steps.get_version.outputs.PKG_VERSION }}-1_armhf.deb
+
+      - name: Download Deb ppc64le
+        uses: actions/download-artifact@v4
+        with:
+          name: sftpgo-plugins_${{ steps.get_version.outputs.PKG_VERSION }}-1_ppc64el.deb
+
+      - name: Download Linux bundle
+        uses: actions/download-artifact@v4
+        with:
+          name: sftpgo-plugins_${{ steps.get_version.outputs.PLUGINS_VERSION }}_linux_bundle.tar.xz
+
+      - name: Create release
+        run: |
+          gh release create "${PLUGINS_VERSION}" -t "${PLUGINS_VERSION}"
+          gh release upload "${PLUGINS_VERSION}" sftpgo-plugins_*.xz --clobber
+          gh release upload "${PLUGINS_VERSION}" sftpgo-plugins-*.rpm --clobber
+          gh release upload "${PLUGINS_VERSION}" sftpgo-plugins_*.deb --clobber
+          gh release view "${PLUGINS_VERSION}"
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          PLUGINS_VERSION: ${{ steps.get_version.outputs.PLUGINS_VERSION }}
