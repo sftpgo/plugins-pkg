@@ -36,6 +36,15 @@ contents:
   - src: "sftpgo-plugin-*"
     dst: "/usr/bin/"
 
+overrides:
+  deb:
+    scripts:
+      postinstall: ../scripts/deb/postinstall.sh
+
+  rpm:
+    scripts:
+      postremove: ../scripts/rpm/postremove
+
 rpm:
   compression: xz
 

@@ -8,9 +8,9 @@ do
     else
         export NFPM_ARCH=${ARCH}
     fi
-    echo ""
+    echo "================"
     echo "build for arch ${PLUGINS_ARCH}, NFPM arch ${NFPM_ARCH}"
-    echo ""
+    echo "================"
     ./build.sh
 
     mkdir -p bundle/${NFPM_ARCH}
