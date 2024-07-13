@@ -1,0 +1,13 @@
+Source: sftpgo-plugins
+Section: net
+Priority: optional
+Maintainer: Nicola Murino <nicola.murino@gmail.com>
+Build-Depends: debhelper (>= 10)
+Standards-Version: 4.1.2
+Homepage: https://github.com/sftpgo
+Vcs-Git: https://github.com/sftpgo/plugins-pkg
+
+Package: sftpgo-plugins
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Official plugins for SFTPGo

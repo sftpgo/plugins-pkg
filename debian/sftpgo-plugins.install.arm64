@@ -1,0 +1,6 @@
+arm64/sftpgo-plugin-auth usr/bin
+arm64/sftpgo-plugin-eventsearch usr/bin
+arm64/sftpgo-plugin-eventstore usr/bin
+arm64/sftpgo-plugin-geoipfilter usr/bin
+arm64/sftpgo-plugin-kms usr/bin
+arm64/sftpgo-plugin-pubsub usr/bin

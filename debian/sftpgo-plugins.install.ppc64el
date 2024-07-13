@@ -1,0 +1,6 @@
+ppc64le/sftpgo-plugin-auth usr/bin
+ppc64le/sftpgo-plugin-eventsearch usr/bin
+ppc64le/sftpgo-plugin-eventstore usr/bin
+ppc64le/sftpgo-plugin-geoipfilter usr/bin
+ppc64le/sftpgo-plugin-kms usr/bin
+ppc64le/sftpgo-plugin-pubsub usr/bin
