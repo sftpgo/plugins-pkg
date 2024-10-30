@@ -9,4 +9,4 @@ Included plugins:
 - auth v1.0.9
 - geoipfilter v1.0.8
 - pubsub v1.0.12
-- kms v1.0.12
+- kms v1.0.13
